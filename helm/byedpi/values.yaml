@@ -29,11 +29,19 @@ args:
 # The SOCKS5 port the proxy listens on.
 proxyPort: 1080
 
+# Internal (in-cluster) SOCKS5 service.
 service:
-  type: NodePort
+  type: ClusterIP
   port: 1080
-  # Fixed nodePort exposed on each node when type is NodePort.
-  # Must be within the cluster's node-port range (default 30000-32767).
+  annotations: {}
+
+# Separate NodePort service for reaching the proxy from outside the cluster.
+# Created in addition to the ClusterIP service above when enabled.
+nodePortService:
+  enabled: true
+  port: 1080
+  # Fixed nodePort exposed on each node. Must be within the cluster's
+  # node-port range (default 30000-32767). Leave "" to auto-assign.
   nodePort: 31080
   annotations: {}
 

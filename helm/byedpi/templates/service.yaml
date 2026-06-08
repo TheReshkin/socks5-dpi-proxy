@@ -15,8 +15,30 @@ spec:
       targetPort: socks5
       protocol: TCP
       name: socks5
-      {{- if and (eq .Values.service.type "NodePort") .Values.service.nodePort }}
-      nodePort: {{ .Values.service.nodePort }}
+  selector:
+    {{- include "byedpi.selectorLabels" . | nindent 4 }}
+{{- if .Values.nodePortService.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "byedpi.fullname" . }}-nodeport
+  labels:
+    {{- include "byedpi.labels" . | nindent 4 }}
+  {{- with .Values.nodePortService.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: NodePort
+  ports:
+    - port: {{ .Values.nodePortService.port }}
+      targetPort: socks5
+      protocol: TCP
+      name: socks5
+      {{- with .Values.nodePortService.nodePort }}
+      nodePort: {{ . }}
       {{- end }}
   selector:
     {{- include "byedpi.selectorLabels" . | nindent 4 }}
+{{- end }}
