@@ -30,10 +30,11 @@ args:
 proxyPort: 1080
 
 service:
-  type: ClusterIP
+  type: NodePort
   port: 1080
-  # Optional fixed nodePort when type is NodePort (1080 maps externally).
-  nodePort: ""
+  # Fixed nodePort exposed on each node when type is NodePort.
+  # Must be within the cluster's node-port range (default 30000-32767).
+  nodePort: 31080
   annotations: {}
 
 serviceAccount:
