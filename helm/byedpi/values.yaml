@@ -4,10 +4,10 @@ replicaCount: 1
 
 image:
   # Custom image to be built later. Override repository/tag at deploy time.
-  repository: tazihad/byedpi
+  repository: reshkin/byedpi
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "0.0.1"
 
 imagePullSecrets: []
 nameOverride: ""
