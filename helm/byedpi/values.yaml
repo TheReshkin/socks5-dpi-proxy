@@ -1,0 +1,86 @@
+# Default values for byedpi.
+
+replicaCount: 1
+
+image:
+  # Custom image to be built later. Override repository/tag at deploy time.
+  repository: tazihad/byedpi
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# byedpi (ciadpi) command-line arguments controlling the DPI-bypass strategy.
+# The container ENTRYPOINT is /opt/byedpi/ciadpi; these become its args.
+# Examples:
+#   ["--disorder", "1", "--debug", "1"]
+#   ["--fake", "-1", "--md5sig", "--debug", "1"]
+#   ["--oob", "1+s", "--debug", "1"]
+#   ["--disorder", "1", "--fake", "-1", "--ttl", "8", "--auto=torst", "--tlsrec", "1+s", "--debug", "1"]
+args:
+  - "--tlsrec"
+  - "1+s"
+  - "--debug"
+  - "1"
+
+# The SOCKS5 port the proxy listens on.
+proxyPort: 1080
+
+service:
+  type: ClusterIP
+  port: 1080
+  # Optional fixed nodePort when type is NodePort (1080 maps externally).
+  nodePort: ""
+  annotations: {}
+
+serviceAccount:
+  create: true
+  automount: false
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: false
+  capabilities:
+    drop:
+      - ALL
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 32Mi
+
+livenessProbe:
+  tcpSocket:
+    port: socks5
+  initialDelaySeconds: 5
+  periodSeconds: 15
+
+readinessProbe:
+  tcpSocket:
+    port: socks5
+  initialDelaySeconds: 3
+  periodSeconds: 10
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

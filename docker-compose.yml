@@ -1,0 +1,38 @@
+version: "3"
+services:
+  byedpi:
+    image: tazihad/byedpi:latest
+    container_name: app-byedpi
+    # Варианты конфигурации (раскомментировать нужный):
+    # 1. Базовый disorder:
+    #   command: --disorder 1 --debug 1
+    # 2. Fake + MD5 (лучший на Linux, сервер отбрасывает фейк):
+    #   command: --fake -1 --md5sig --debug 1
+    # 3. OOB на SNI:
+    #   command: --oob 1+s --debug 1
+    # 4. TLS record split только при блокировке (auto):
+    command: --tlsrec 1+s --debug 1
+    # 5. Комбо universal:
+    #   command: --disorder 1 --fake -1 --ttl 8 --auto=torst --tlsrec 1+s --debug 1
+    ports:
+      - 1080:1080/tcp
+    restart: unless-stopped
+    networks:
+      - byedpi-network
+
+  busybox-pypi-test:
+    image: curlimages/curl:latest
+    container_name: busybox-pypi-test
+    depends_on:
+      - byedpi
+    command: >-
+      sh -c 'out=$$(curl -sSf -H "Host: www.roblox.com" --socks5-hostname byedpi:1080 https://www.roblox.com/ 2>&1); code=$$?;
+      echo "$$out" | head -20;
+      [ $$code -eq 0 ] && echo "[RESULT] Connection through SOCKS5 proxy successful!" || echo "[ERROR] Failed to connect (curl exit $$code)"'
+    restart: "no"
+    networks:
+      - byedpi-network
+
+networks:
+  byedpi-network:
+    driver: bridge

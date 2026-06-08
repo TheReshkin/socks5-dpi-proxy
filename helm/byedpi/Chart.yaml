@@ -1,0 +1,17 @@
+apiVersion: v2
+name: byedpi
+description: A Helm chart for the byedpi SOCKS5 proxy (DPI bypass)
+type: application
+version: 0.1.0
+appVersion: "latest"
+keywords:
+  - socks5
+  - proxy
+  - byedpi
+  - dpi-bypass
+home: https://github.com/hufrea/byedpi
+sources:
+  - https://github.com/hufrea/byedpi
+maintainers:
+  - name: MTereshkin
+    email: reshkin@proton.me

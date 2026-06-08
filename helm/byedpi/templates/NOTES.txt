@@ -1,0 +1,25 @@
+byedpi SOCKS5 proxy deployed.
+
+The proxy is reachable inside the cluster at:
+
+  {{ include "byedpi.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
+
+Test it from another pod:
+
+  curl --socks5-hostname {{ include "byedpi.fullname" . }}:{{ .Values.service.port }} https://www.example.com/
+
+{{- if eq .Values.service.type "ClusterIP" }}
+
+To reach it from your machine, port-forward:
+
+  kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "byedpi.fullname" . }} {{ .Values.service.port }}:{{ .Values.service.port }}
+
+Then point your SOCKS5 client at localhost:{{ .Values.service.port }}.
+{{- else if eq .Values.service.type "NodePort" }}
+
+Get the NodePort:
+
+  kubectl --namespace {{ .Release.Namespace }} get svc {{ include "byedpi.fullname" . }}
+{{- end }}
+
+Active byedpi (ciadpi) args: -i 0.0.0.0 -p {{ .Values.proxyPort }} {{ join " " .Values.args }}
